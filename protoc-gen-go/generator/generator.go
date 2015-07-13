@@ -1303,6 +1303,17 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.P("}")
 	}
 
+	g.P("func (x *", ccTypeName, ") MarshalJSON() ([]byte, error) {")
+	g.In()
+	g.P("if x == nil {")
+	g.In()
+	g.P(`return []byte("null"), nil`)
+	g.Out()
+	g.P("}")
+	g.P(`return []byte("\"" + ` + ccTypeName + `_name[int32(*x)] + "\""), nil`)
+	g.Out()
+	g.P("}")
+
 	g.P()
 }
 
