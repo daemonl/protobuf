@@ -1736,9 +1736,11 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		}
 		mname := "Get" + fieldGetterNames[field]
 		star := ""
+		ampersand := ""
 		if needsStar(*field.Type) && typename[0] == '*' {
 			typename = typename[1:]
 			star = "*"
+			ampersand = "&"
 		}
 
 		// In proto3, only generate getters for message fields.
@@ -1774,6 +1776,14 @@ func (g *Generator) generateMessage(message *Descriptor) {
 				typeName: field.GetTypeName(),
 				genType:  genType,
 			})
+		}
+
+		if !genType {
+			g.P("func (m *", ccTypeName, ") Set"+fieldGetterNames[field]+" (x "+typename+") {")
+			g.In()
+			g.P("m." + fname + " = " + ampersand + "x")
+			g.Out()
+			g.P("}")
 		}
 
 		g.P("func (m *", ccTypeName, ") "+mname+"() "+typename+" {")
